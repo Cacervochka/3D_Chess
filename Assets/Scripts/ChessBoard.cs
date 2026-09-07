@@ -65,17 +65,49 @@ public class ChessBoard : MonoBehaviour
         {
             SpawnSinglePiece(pawnPrefab, new Vector2Int(x, 6), false, ChessPieceType.Pawn);
         }
+
+        SpawnSinglePiece(bishopPrefab, new Vector2Int(2,0), true, ChessPieceType.Bishop);
+        SpawnSinglePiece(bishopPrefab, new Vector2Int(5,0), true, ChessPieceType.Bishop);
+        SpawnSinglePiece(bishopPrefab, new Vector2Int(2,7), false, ChessPieceType.Bishop);
+        SpawnSinglePiece(bishopPrefab, new Vector2Int(5,7), false, ChessPieceType.Bishop);
+
+        SpawnSinglePiece(knightPrefab, new Vector2Int(1,0), true, ChessPieceType.Knight);
+        SpawnSinglePiece(knightPrefab, new Vector2Int(6,0), true, ChessPieceType.Knight);
+        SpawnSinglePiece(knightPrefab, new Vector2Int(1,7), false, ChessPieceType.Knight);
+        SpawnSinglePiece(knightPrefab, new Vector2Int(6,7), false, ChessPieceType.Knight);
+
+        SpawnSinglePiece(rookPrefab, new Vector2Int(0,0), true, ChessPieceType.Rook);
+        SpawnSinglePiece(rookPrefab, new Vector2Int(7,0), true, ChessPieceType.Rook);
+        SpawnSinglePiece(rookPrefab, new Vector2Int(0,7), false, ChessPieceType.Rook);
+        SpawnSinglePiece(rookPrefab, new Vector2Int(7,7), false, ChessPieceType.Rook);
+
+        SpawnSinglePiece(queenPrefab, new Vector2Int(4,0), true, ChessPieceType.Queen);
+        SpawnSinglePiece(queenPrefab, new Vector2Int(4,7), false, ChessPieceType.Queen);
+
+        SpawnSinglePiece(kingPrefab, new Vector2Int(3,0), true, ChessPieceType.King);
+        SpawnSinglePiece(kingPrefab, new Vector2Int(3,7), false, ChessPieceType.King);
     }
 
     void SpawnSinglePiece(GameObject objectPrefab,Vector2Int gridPos,bool isWhite, ChessPieceType type)    
     {   
         
         Quaternion rotation;
-        if(isWhite){
-            rotation=Quaternion.Euler(-90, 0, 90);
-        }else
+        if(type!=ChessPieceType.Knight){
+            if(isWhite){
+                rotation=Quaternion.Euler(-90, 0, 90);
+            }else
+            {
+                rotation=Quaternion.Euler(-90, 0, -90);
+            }
+        }
+        else
         {
-            rotation=Quaternion.Euler(-90, 0, -90);
+            if(isWhite){
+                rotation=Quaternion.Euler(-90, 0, 0);
+            }else
+            {
+                rotation=Quaternion.Euler(-90, 0, 180);
+            }
         }
         Vector3 worldPos = new Vector3((float)gridPos.x+0.5f, 0.0f, (float)gridPos.y+0.5f);
 
@@ -101,7 +133,8 @@ public class ChessBoard : MonoBehaviour
     private void HandleClick(Vector2 mousePosition)
     {
         Ray ray = Camera.main.ScreenPointToRay(mousePosition);
-
+        
+        
         if (Physics.Raycast(ray, out RaycastHit hitInfo))
         {
             Vector2Int gridPos = GetGridPosition(hitInfo.point);
@@ -150,6 +183,12 @@ public class ChessBoard : MonoBehaviour
     private void MakeMove(ChessPiece piece, Vector2Int newPos)
     {
         Vector2Int oldPos = piece.BoardPosition;
+
+        if(board[newPos.x,newPos.y]!=null)
+        {
+            ChessPiece pieceVisibility=board[newPos.x,newPos.y];
+            pieceVisibility.GetComponent<Renderer>().enabled = false;        
+        }
 
         board[oldPos.x, oldPos.y] = null;
         board[newPos.x, newPos.y] = piece;
